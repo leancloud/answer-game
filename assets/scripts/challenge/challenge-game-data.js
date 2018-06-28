@@ -22,7 +22,6 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
     onLoad () {
-        cc.log('challenge-game-data 被调用');
         cc.game.addPersistRootNode(this.node);
     },
 
@@ -33,7 +32,7 @@ cc.Class({
         .then(function(challenges) {
             // [AVObject, ...]
             var challenge = challenges[0];
-            self.questions = challenge.get('questions');
+            self.questions = challenge.get('challenge').get('questions');
             self.rivalOptions = challenge.get('userOptions');
             self.rivalOptionScores = challenge.get('userOptionScores');
             self.rivalUsername = challenge.get('user').get('username');

@@ -83,6 +83,7 @@ cc.Class({
 
     // 设置问题
     newQuestion () {
+        cc.log('newQuestion被调用');
         if (this.currentQuestionIndex == this.questions.length) {
             // 答题结束
             // 保存分数供他人挑战
@@ -91,6 +92,8 @@ cc.Class({
                 // 展示结果
                 var result = '得分';
                 self.resultPanel.show(result, self.myScore);
+                self.userOptions = [];
+                self.userOptionScores = [];
             }).catch(function(e){
                 cc.error(e);
             });
@@ -185,7 +188,10 @@ cc.Class({
                 this.userOptions.push(-1);
                 // 下一题
                 this.remainTime = Constants.QUESTION_TIMER;
-                this.newQuestion();
+                // 如果不是最后一题的倒计时则进入下一题
+                if (this.currentQuestionIndex < this.questions.length) {
+                    this.newQuestion();
+                }
             } else {
                 this.remainTime--;
                 this.timeLabel.string = this.remainTime + 's';
@@ -203,19 +209,26 @@ cc.Class({
     },
 
     saveResult () {
-        var Challenge = AV.Object.extend('Challenge');
-        var challenge = new Challenge();
-        // 是谁答题
-        var currentUser = AV.User.current();
-        challenge.set('user', currentUser);
-        // 答了哪些题
-        challenge.set('questions', this.questions);
-        // 选了哪些答案
-        challenge.set('userOptions', this.userOptions);
-        // 每个答案多少分
-        challenge.set('userOptionScores', this.userOptionScores);
-        // 保存
-        return challenge.save();
+        // 存储挑战题库
+        var ChallengeQuestion = AV.Object.extend('ChallengeQuestion');
+        var challengeQuestion = new ChallengeQuestion();
+        challengeQuestion.set('questions', this.questions);
+        return challengeQuestion.save().then((challengeQuestion) => {
+            // 存储当前用户得分
+            var ChallengeScore = AV.Object.extend('ChallengeScore');
+            var challengeScore = new ChallengeScore(); 
+            // 存储题目
+            challengeScore.set('challenge', challengeQuestion);
+            // 是谁答题
+            var currentUser = AV.User.current();
+            challengeScore.set('user', currentUser);
+            // 选了哪些答案
+            challengeScore.set('userOptions', this.userOptions);
+            // 每个答案多少分
+            challengeScore.set('userOptionScores', this.userOptionScores);
+            // 保存
+            return challengeScore.save();
+        });
     },
     
 });

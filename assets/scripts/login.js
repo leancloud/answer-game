@@ -23,8 +23,8 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
-        var APP_ID = 'nWV9ebO1JMUIE5K4gBS1i1MA';
-        var APP_KEY = 'bseSnEdWQBcrq26alUjEYY9P';
+        var APP_ID = 'ta9jYFH8AbjSCRvgnObdu25B-gzGzoHsz';
+        var APP_KEY = 'haPSS6eGp7iQXpgwLaTVKKBe';
 
         AV.init({
         appId: APP_ID,
