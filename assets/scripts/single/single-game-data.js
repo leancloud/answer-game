@@ -8,11 +8,13 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
+var AV = require('leancloud-storage');
+
 cc.Class({
     extends: cc.Component,
 
     properties: {
-
+        questions: null,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -20,4 +22,22 @@ cc.Class({
         cc.game.addPersistRootNode(this.node);
     },
 
+    start () {
+
+    },
+
+    // CUSTOM METHODS
+    getQuestions () {
+        var self = this;
+        AV.Cloud.rpc('getSingleGameData')
+        .then(function(questions) {
+            // [AVObject, ...]
+            cc.log(questions);
+            self.questions = questions;
+            cc.director.loadScene('single-game-play');
+        })
+        .catch(function(err) {
+            console.error(err);
+        });
+    }
 });

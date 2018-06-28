@@ -1757,7 +1757,9 @@
     "questionIndexLabel": {
       "__id__": 14
     },
-    "titleLabel": null,
+    "titleLabel": {
+      "__id__": 17
+    },
     "myScoreLabel": {
       "__id__": 20
     },
