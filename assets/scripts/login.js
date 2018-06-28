@@ -44,11 +44,8 @@ cc.Class({
             "expires_in": "2016-01-06T11:43:11.904Z"
         }, 'weixin')
         .then(function (currentUser) {
-            if (!currentUser.getUsername()) {
-                currentUser.setUsername('LiLei');
-                return currentUser.save();
-            }
-            return;
+            currentUser.setUsername('LiLei');
+            return currentUser.save();
         })
         .then(function () {
             cc.director.loadScene('menu');
