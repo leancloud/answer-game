@@ -31,8 +31,6 @@ cc.Class({
         var self = this;
         AV.Cloud.rpc('getSingleGameData')
         .then(function(questions) {
-            // [AVObject, ...]
-            cc.log(questions);
             self.questions = questions;
             cc.director.loadScene('single-game-play');
         })

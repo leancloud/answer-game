@@ -75,7 +75,6 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
     onLoad () {
         // Get questions
-        cc.log('challenge game play 被调用');
         var challengeGameDataNode = cc.find('ChallengeGameData');
         var challengeGameData = challengeGameDataNode.getComponent(ChallengeGameData);
         this.questions = challengeGameData.questions;

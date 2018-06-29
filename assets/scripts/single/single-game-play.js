@@ -83,7 +83,6 @@ cc.Class({
 
     // 设置问题
     newQuestion () {
-        cc.log('newQuestion被调用');
         if (this.currentQuestionIndex == this.questions.length) {
             // 答题结束
             // 保存分数供他人挑战

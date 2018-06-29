@@ -27,8 +27,8 @@ cc.Class({
         var APP_KEY = 'haPSS6eGp7iQXpgwLaTVKKBe';
 
         AV.init({
-        appId: APP_ID,
-        appKey: APP_KEY
+            appId: APP_ID,
+            appKey: APP_KEY
         });
     },
 
@@ -37,19 +37,21 @@ cc.Class({
     },
 
     onLoginButtonClicked () {
-       User.loginWithAuthData({
-            // 微信（weixin）和 QQ（qq）用 openid
-            "openid": "oPrJ7uM5Y5oeypd0fyqQcKCaRv3o",
-            "access_token": "OezXcEiiBSKSxW0eoylIeNFI3H7HsmxM7dUj1dGRl2dXJOeIIwD4RTW7Iy2IfJePh6jj7OIs1GwzG1zPn7XY_xYdFYvISeusn4zfU06NiA1_yhzhjc408edspwRpuFSqtYk0rrfJAcZgGBWGRp7wmA",
-            "expires_in": "2016-01-06T11:43:11.904Z"
-        }, 'weixin')
-        .then(function (currentUser) {
-            currentUser.setUsername('LiLei');
-            return currentUser.save();
-        })
+        var uuid = this.randomUuid();
+
+        User.loginWithAuthData({
+            id: uuid
+        }, 'anonymous')
         .then(function () {
             cc.director.loadScene('menu');
         })
         .catch(console.error);
+    },
+
+    randomUuid () {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 });
