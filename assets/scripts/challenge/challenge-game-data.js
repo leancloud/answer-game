@@ -29,9 +29,7 @@ cc.Class({
     getChallenge () {
         var self = this;
         return AV.Cloud.rpc('getChallengeGameData')
-        .then(function(challenges) {
-            // [AVObject, ...]
-            var challenge = challenges[0];
+        .then(function(challenge) {
             self.questions = challenge.get('challenge').get('questions');
             self.rivalOptions = challenge.get('userOptions');
             self.rivalOptionScores = challenge.get('userOptionScores');

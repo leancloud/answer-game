@@ -35,7 +35,7 @@ AV.Cloud.define('getChallengeGameData', function(request) {
     challengeQuery.equalTo('cid', cid);
     challengeQuery.include(['user', 'challenge.questions']);
     challengeQuery.select(['user.username', 'challenge', 'userOptionScores', 'userOptions']);
-    return challengeQuery.find();
+    return challengeQuery.first();
   });
 });
 

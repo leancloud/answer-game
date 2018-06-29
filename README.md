@@ -1,7 +1,10 @@
 # answer-game
 
+## 效果预览
+[点击此处在线感受游戏](http://answer-game.leanapp.cn/)
+
 ## 服务端
-创建 [LeanCloud](https://leancloud.cn/) 应用
+进行以下操作前需创建 [LeanCloud](https://leancloud.cn/) 应用
 
 ### 数据存储
 1. 进入「控制台」->「存储」
