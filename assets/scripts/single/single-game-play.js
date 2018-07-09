@@ -212,6 +212,8 @@ cc.Class({
         var ChallengeQuestion = AV.Object.extend('ChallengeQuestion');
         var challengeQuestion = new ChallengeQuestion();
         challengeQuestion.set('questions', this.questions);
+        var currentUser = AV.User.current();
+        challengeQuestion.set('creator', currentUser);
         return challengeQuestion.save().then((challengeQuestion) => {
             // 存储当前用户得分
             var ChallengeScore = AV.Object.extend('ChallengeScore');
@@ -219,7 +221,6 @@ cc.Class({
             // 存储题目
             challengeScore.set('challenge', challengeQuestion);
             // 是谁答题
-            var currentUser = AV.User.current();
             challengeScore.set('user', currentUser);
             // 选了哪些答案
             challengeScore.set('userOptions', this.userOptions);
