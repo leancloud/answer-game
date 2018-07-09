@@ -14,20 +14,41 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        
+        backButton: {
+            default: null,
+            type: cc.Button
+        },
+        infoLabel: {
+            default: null,
+            type: cc.Label,
+        }
     },
 
     // LIFE-CYCLE CALLBACKS:
 
     onLoad () {
+        var self = this;
         var singleGameDataNode = cc.find('SingleGameData');
         var singleGameData = singleGameDataNode.getComponent(SingleGameData);
-        singleGameData.getQuestions();
+        singleGameData.getQuestions()
+        .then(function() {
+            cc.director.loadScene('single-game-play');
+        }).catch(function (err) {
+            console.log(err.error);
+            if (err.code == 403) {
+                self.infoLabel.string = '今天答题次数用完啦，明天再来吧~';
+            } else {
+                cc.error(err);
+            }
+        });
     },
 
     start () {
 
     },
 
-    // update (dt) {},
+    // CUSTOM METHODS
+    onBackButtonClicked () {
+        cc.director.loadScene('menu');
+    },
 });
