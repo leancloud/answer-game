@@ -12,13 +12,28 @@
 3. 点击「创建 Class」，新建 `ChallengeScore` 表，点击「添加列」，输入列名称 `cid` ，列类型选择 Number，勾选「自增」。
 
 ### 云引擎
-1. 进入「控制台」->「云引擎」->「部署」，选择「在线编辑」
-2. 创建函数
-  * 选择 Global，将 `./cloud-code/cloud.js` 中的 `getRandomNumbers()` 方法复制粘贴进去，保存。
-  * 选择 Function，将 `./cloud-code/cloud.js` 中的 `getSingleGameData()` 方法复制粘贴进去，保存。
-  * 选择 Function，将 `./cloud-code/cloud.js` 中的 `getChallengeGameData()` 方法复制粘贴进去，保存。
+```
+$ cd ./answer-game-cloud/
+```
+#### 下载依赖
+```
+$ npm install
+```
+#### 安装命令行工具
+[点击此处查看安装教程](https://leancloud.cn/docs/leanengine_cli.html#hash1443149115)
 
-3. 点击「部署」
+#### 本地调试
+```
+$ lean login
+$ lean switch
+$ lean up
+```
+
+#### 部署
+```
+$ lean deploy
+```
+
 
 ## 客户端
 ### 配置
