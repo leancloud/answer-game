@@ -54,6 +54,7 @@ cc.Class({
             default: null,
         },
 
+        challenge: null,
         questions: null,
         currentQuestion: null,
         currentQuestionIndex: 0,
@@ -77,7 +78,8 @@ cc.Class({
         // Get questions
         var challengeGameDataNode = cc.find('ChallengeGameData');
         var challengeGameData = challengeGameDataNode.getComponent(ChallengeGameData);
-        this.questions = challengeGameData.questions;
+        this.challenge = challengeGameData.challenge;
+        this.questions = this.challenge.get('questions');
         this.rivalOptions = challengeGameData.rivalOptions;
         this.rivalOptionScores = challengeGameData.rivalOptionScores;
         // 设置问题
@@ -107,7 +109,13 @@ cc.Class({
             } else {
                 var result = '你输啦，今晚吃素';
             }
-            this.resultPanel.show(result, this.myScore);
+            var self = this;
+            this.saveResult().then(function () {
+                self.resultPanel.show(result, self.myScore);
+            })
+            .catch(function(err){
+                cc.error(err);
+            });
             return;
         }
         
@@ -144,6 +152,7 @@ cc.Class({
     },
 
     onOptionButtonClicked (event, customEventData) {
+        this.myOptions.push(customEventData);
         // 设置按钮颜色
         var optionIndex = customEventData;
         var answerIndex = this.currentQuestion.get('answerIndex');
@@ -165,7 +174,12 @@ cc.Class({
             optionButton.interactable = false;
         }
         // 计算分数
-        this.calculateScore(answerIndex, optionIndex);
+        if (answerIndex === customEventData) {
+            this.calculateScore(answerIndex, optionIndex);
+        } else {
+            this.myOptionScores.push(0);
+        }
+        
         
         // 下一题
         var self = this;
@@ -181,6 +195,7 @@ cc.Class({
         if (answerIndex === optionIndex) {
             // this.myScore += 30;
             var score = this.remainTime /  Constants.QUESTION_TIMER * Constants.QUESTION_SCORE;
+            this.myOptionScores.push(score);
             this.myScore += score;
             this.myScoreLabel.string = this.myScore;
         }
@@ -200,6 +215,9 @@ cc.Class({
             if (this.remainTime <= 0) {
                 // 停止计时
                 this.unschedule(this.timerCallback);
+                // 分数为 0
+                this.myOptionScores.push(0);
+                this.myOptions.push(-1);
                 // 下一题
                 this.currentQuestionIndex ++;
                 this.remainTime = Constants.QUESTION_TIMER;
@@ -212,4 +230,18 @@ cc.Class({
         this.schedule(this.timerCallback, 1);
     },
     
+    saveResult () {
+        var ChallengeScore = AV.Object.extend('ChallengeScore');
+        var challengeScore = new ChallengeScore(); 
+        // 存储题目
+        challengeScore.set('challenge', this.challenge);
+        // 是谁答题
+        challengeScore.set('user', AV.User.current());
+        // 选了哪些答案
+        challengeScore.set('userOptions', this.myOptions);
+        // 每个答案多少分
+        challengeScore.set('userOptionScores', this.myOptionScores);
+        // 保存
+        return challengeScore.save();
+    },
 });

@@ -14,7 +14,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-        questions: null,
+        challenge: null,
         rivalOptions: null,
         rivalOptionScores: null,
         rivalUsername: null,
@@ -30,7 +30,7 @@ cc.Class({
         var self = this;
         return AV.Cloud.rpc('getChallengeGameData')
         .then(function(challenge) {
-            self.questions = challenge.get('challenge').get('questions');
+            self.challenge = challenge.get('challenge');
             self.rivalOptions = challenge.get('userOptions');
             self.rivalOptionScores = challenge.get('userOptionScores');
             self.rivalUsername = challenge.get('user').get('username');
