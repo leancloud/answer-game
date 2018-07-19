@@ -34,7 +34,7 @@ cc.Class({
 
     onLoad () {
         var self = this;
-        Promise.all([this.getWorldLeaderboard(), this.getSelfLeaderborad()])
+        Promise.all([this.getTopLeaderboard(), this.getSelfLeaderborad()])
         .then(function(leaderboards){
             self.topResult = leaderboards[0];
             
