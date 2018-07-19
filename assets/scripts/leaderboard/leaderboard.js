@@ -92,7 +92,7 @@ cc.Class({
         cc.director.loadScene('menu');
     },
 
-    getWorldLeaderboard () {
+    getTopLeaderboard () {
         // 获取前 10 的用户
         var leaderboard = AV.Leaderboard.createWithoutData('world');
         return leaderboard.getResults({

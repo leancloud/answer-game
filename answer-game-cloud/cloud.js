@@ -73,15 +73,15 @@ AV.Cloud.define('weeklyRewards', function(request) {
   })
   .then((rankings) => {
     // 给每个用户增加 10 个金币。
-    for (let i = 0; i < rankings.length; i++) {
-      var ranking = rankings[i];
+    var users = rankings.map((ranking) => {
       var user = ranking.user;
       user.increment('gold', 10);
-      user.save().catch(console.error);
-    }
-    return;
-  })
-  .catch(console.error);
+      return user;
+    });
+    return AV.User.saveAll(users);
+  }).then(() => {
+    console.log('排行榜奖品发完啦 ' + new Date().toLocaleString());
+  }).catch(console.error);
 });
 
 /**
