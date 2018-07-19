@@ -39,4 +39,8 @@ cc.Class({
     onChanllengeButtonClicked () {
         cc.director.loadScene('challenge-game-prepare');
     },
+
+    onLeaderboardButtonClicked () {
+        cc.director.loadScene('leaderboard');
+    },
 });

@@ -12,9 +12,8 @@ AV.Cloud.define('getSingleGameData', function(request) {
   countQuery.greaterThanOrEqualTo('createdAt', today);
   return countQuery.count().then(function(count) {
     console.log('count 是', count);
-    if (count >= 0) {
+    if (count >= 3) {
       // 玩过 3 次就不让玩了
-      console.log('抛出错误');
       throw new AV.Cloud.Error('Exceeded Limit', {code: 403});
     } else {
       var qidQuery = new AV.Query('Question');
@@ -55,6 +54,37 @@ AV.Cloud.define('getChallengeGameData', function(request) {
 });
 
 /**
+ * 根据上一版的历史排行数据发奖品
+ */
+AV.Cloud.define('weeklyRewards', function(request) {
+  var leaderboard = AV.Leaderboard.createWithoutData('world');
+  // 查询当前排行榜的版本
+  return leaderboard.fetch()
+  .then((leaderboard) => {
+    // 当前版本 -1 是最新的历史数据
+    var lastHistoryVersion = leaderboard.version - 1;
+    // 获得上一版排行榜中的前 10 名用户
+    return leaderboard.getResults({
+      limit: 10,
+      skip: 0,
+      selectUserKeys: ['username'],
+      version: lastHistoryVersion,
+    })
+  })
+  .then((rankings) => {
+    // 给每个用户增加 10 个金币。
+    for (let i = 0; i < rankings.length; i++) {
+      var ranking = rankings[i];
+      var user = ranking.user;
+      user.increment('gold', 10);
+      user.save().catch(console.error);
+    }
+    return;
+  })
+  .catch(console.error);
+});
+
+/**
  * 获取随机数
  */
 const getRandomNumbers = (max, count) => {
@@ -68,3 +98,5 @@ const getRandomNumbers = (max, count) => {
   }
   return randomNumbers;
 };
+
+
