@@ -29,13 +29,10 @@ cc.Class({
     // CUSTOM METHODS
     getQuestions () {
         var self = this;
-        AV.Cloud.rpc('getSingleGameData')
+        return AV.Cloud.rpc('getSingleGameData')
         .then(function(questions) {
             self.questions = questions;
-            cc.director.loadScene('single-game-play');
-        })
-        .catch(function(err) {
-            console.error(err);
+            return questions;
         });
     }
 });

@@ -88,12 +88,16 @@ cc.Class({
             // 保存分数供他人挑战
             var self = this;
             this.saveResult().then(function() {
+                return self.saveResultLeaderboard();
+            })
+            .then(function() {
                 // 展示结果
                 var result = '得分';
                 self.resultPanel.show(result, self.myScore);
                 self.userOptions = [];
                 self.userOptionScores = [];
-            }).catch(function(e){
+            })
+            .catch(function(e){
                 cc.error(e);
             });
             return;
@@ -230,5 +234,15 @@ cc.Class({
             return challengeScore.save();
         });
     },
-    
+
+    saveResultLeaderboard () {
+        var sum = 0;
+        for( var i = 0; i < this.userOptionScores.length; i++ ){
+            sum += this.userOptionScores[i]; 
+        }
+        
+        return AV.Leaderboard.updateStatistics(AV.User.current(), {
+            world: sum,
+        });
+    }, 
 });
