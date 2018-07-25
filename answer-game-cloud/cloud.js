@@ -66,8 +66,6 @@ AV.Cloud.define('weeklyRewards', function(request) {
     // 获得上一版排行榜中的前 10 名用户
     return leaderboard.getResults({
       limit: 10,
-      skip: 0,
-      selectUserKeys: ['username'],
       version: lastHistoryVersion,
     })
   })
