@@ -11,6 +11,12 @@ var AV = require('leancloud-storage');
 var Mock = require('mockjs')
 var {User} = AV;
 
+import {
+    play,
+    Region,
+    Event,
+} from '../play';
+
 cc.Class({
     extends: cc.Component,
 
@@ -35,6 +41,13 @@ cc.Class({
             appId: APP_ID,
             appKey: APP_KEY
         });
+
+        const opts = {
+            appId: APP_ID,
+            appKey: APP_KEY,
+            region: Region.NorthChina,
+          }
+          play.init(opts);
     },
 
     start () {
@@ -42,8 +55,8 @@ cc.Class({
     },
 
     onLoginButtonClicked () {
-        var uuid = this.randomUuid();
-
+        var uuid = this.randomId();
+        console.log(uuid);
         User.loginWithAuthData({
             id: uuid
         }, 'anonymous')
@@ -55,15 +68,32 @@ cc.Class({
             return currentUser.save();
         })
         .then(function () {
-            cc.director.loadScene('menu');
+            // 连接在线对战服务器
+            play.userId = uuid;
+            play.connect();
+            
         })
         .catch(console.error);
+
+
+        // 注册连接成功事件
+        play.on(Event.CONNECTED, () => {
+            // TODO 可以做跳转场景等操作
+            cc.director.loadScene('menu');
+        });
+
+        // 注册连接失败事件
+        play.on(Event.CONNECT_FAILED, (error) => {
+            console.error(error);
+        });
+
     },
 
-    randomUuid () {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    randomId () {
+        return 'xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
-    }
+    },
+    
 });
