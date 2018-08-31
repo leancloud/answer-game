@@ -3242,7 +3242,9 @@
 	       * @param {Object} [opts.expectedValues] 期望属性，用于 CAS 检测
 	       */ }, { key: 'setCustomProperties', value: function setCustomProperties(
 	    properties) {var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},_ref$expectedValues = _ref.expectedValues,expectedValues = _ref$expectedValues === undefined ? null : _ref$expectedValues;
-	      this._play._setPlayerCustomProperties(
+			cc.log('SDK Debug');
+			cc.log(this.getCustomProperties());
+			this._play._setPlayerCustomProperties(
 	      this._actorId,
 	      properties,
 	      expectedValues);
