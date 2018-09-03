@@ -8,6 +8,8 @@
 //  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
 //  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
 
+import {play} from '../play';
+
 cc.Class({
     extends: cc.Component,
 
@@ -24,6 +26,9 @@ cc.Class({
     },
 
     onBackButtonClicked() {
+        if (play.room !== null){
+            play.leaveRoom();
+        }
         cc.director.loadScene("menu");
     },
 });

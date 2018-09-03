@@ -52,10 +52,6 @@ cc.Class({
             default: null,
             type: cc.Prefab,
         },
-        timeLabel: {
-            default: null,
-            type: cc.Label,
-        },
         resultPanel: {
             type: ResultPanel,
             default: null,
@@ -66,9 +62,6 @@ cc.Class({
 
         questions: null,
         currentQuestion: null,
-
-        // 剩余答题时间
-        remainTime: 10,
     },
 
     onLoad () {
@@ -82,10 +75,7 @@ cc.Class({
         });
 
         // 设置问题
-        this.newQuestion();
-
-        // 双方开始倒计时
-        this.setupTimer();        
+        this.newQuestion();  
 
         // MasterClient 中的事件触发
         this.node.on('answerOptionClicked', event => {
@@ -150,7 +140,6 @@ cc.Class({
         });
 
         this.node.on('showRoundOverUI', event => {
-            this.stopTimer();
             const correctIndex = event.detail.eventData.correctIndex;
             const rivalOption = this.rivalPlayer.getCustomProperties().currentOption;
             this.showButtonUI(rivalOption, correctIndex);
@@ -162,8 +151,6 @@ cc.Class({
 
         this.node.on('nextRound', event => {
             this.nextQuestion();
-            this.unschedule(this.timerCallback);
-            this.setupTimer();
         });
 
         this.node.on('gameOver', event => {
@@ -176,16 +163,7 @@ cc.Class({
 
     },
 
-    onBackButtonClicked () {
-        cc.director.loadScene('menu');
-    },
-
-    // MasterClient 方法
-    timeOver() {
-        const correctIndex = this.currentQuestion.answerIndex;
-        play.sendEvent('showRoundOverUI', {correctIndex}, {receiverGroup: ReceiverGroup.All});
-    },
-
+    // MasterClient 中的方法
     roundOver() {
         setTimeout(() => {
             // 重置选项
@@ -205,7 +183,7 @@ cc.Class({
 
     calculateScore (answerIndex, optionIndex) {
         if (answerIndex === optionIndex) {
-            return this.remainTime /  Constants.QUESTION_TIMER * Constants.QUESTION_SCORE;
+            return Constants.QUESTION_SCORE;
         }
         return 0;
     },
@@ -242,26 +220,8 @@ cc.Class({
         }
     },
 
-    setupTimer () {
-        this.remainTime = play.room.getCustomProperties().roundTime;
-        this.timeLabel.string = this.remainTime + 's';
-        this.timerCallback = function () {
-            if (this.remainTime <= 0) {
-                this.remainTime = 0;
-                if (play.player.isMaster()) {
-                    // 没答完题，强制游戏结束
-                    this.timeOver();
-                }
-            } else {
-                this.remainTime--;
-                this.timeLabel.string = this.remainTime + 's';
-            }
-        };
-        this.schedule(this.timerCallback, 1);
-    },
-
     onOptionButtonClicked (event, customEventData) {
-        // 发送时间给 master, master 根据自己的 remainTime 计算分数。
+        // 发送事件给 master 获得得分及正确答案
         play.sendEvent('answerOptionClicked', {userOptionIndex: customEventData}, {receiverGroup: ReceiverGroup.MasterClient});
     },
 
@@ -286,13 +246,6 @@ cc.Class({
             optionButton.interactable = false;
         }
     },
-    
-    stopTimer () {
-        // 停止计时器
-        if (this.timerCallback) {
-            this.unschedule(this.timerCallback);
-        }
-    },
 
     gameOver () {
         const selfScore = this.selfPlayer.getCustomProperties().score;
@@ -305,6 +258,10 @@ cc.Class({
         }
         
         this.resultPanel.show(result, selfScore);
+    },
+
+    onBackButtonClicked () {
+        cc.director.loadScene('menu');
     },
 
 });

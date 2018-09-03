@@ -38,7 +38,6 @@ cc.Class({
             type: cc.Label,
         },
 
-        maxPlayerCount: 2,
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -48,17 +47,7 @@ cc.Class({
 
         play.joinRandomRoom();
 
-        this.node.on('readyStatus', (event) => {
-            const props = {
-                // 状态修改为准备
-                ready: true,
-                score: 0,
-                currentOption: -1,
-                nickname: AV.User.current().getUsername(),
-            };
-            play.player.setCustomProperties(props);
-        }, this);
-
+        // MasterClient 需要关心的事件
         this.node.on('createRoom', () => {
             const options = {
                 playerTtl: 30,
@@ -66,14 +55,19 @@ cc.Class({
             };
             play.createRoom({roomOptions: options});
         });
-
-        this.node.on('playerReady', (event) => {
-            if (play.player.isMaster() && event.detail.changedProps.ready !== null) {
-                const readyCount = this.countReady();
-                if (readyCount == this.maxPlayerCount) {
-                    this.getQuestions();
-                }
+        
+        this.node.on('setupPlayerData', (event) => {
+            const player = event.detail.player;
+            const props = {
+                score: 0,
+                currentOption: -1,
+                nickname: AV.User.current().getUsername(),
             };
+            player.setCustomProperties(props);
+        });
+
+        this.node.on('matched', (event) => {
+            this.getQuestions();
         });
         
         this.node.on('questionsReady', (data) => {
@@ -113,17 +107,6 @@ cc.Class({
             };
             play.room.setCustomProperties(roomProps);
         }).catch((error) => console.error(error));
-    },
-
-    countReady () {
-        const players = play.room.playerList;
-        // 计算状态为准备的总人数
-        return players.reduce((total, player) => {
-            if ( player.getCustomProperties().ready) {
-                return total + 1;
-            };
-            return total + 0;
-        }, 0)
     },
 
     showVSUI () {
