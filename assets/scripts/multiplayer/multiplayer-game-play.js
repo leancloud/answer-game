@@ -78,7 +78,7 @@ cc.Class({
         // 明确自己及对手
         this.selfPlayer = play.player;
         this.rivalPlayer = play.room.playerList.find((player, index, array) => {
-            return player.actorId !== this.selfPlayer.actorId;
+            return !player.isLocal();
         });
 
         // 设置问题

@@ -48,7 +48,7 @@ cc.Class({
 
         play.joinRandomRoom();
 
-        this.node.on(Event.ROOM_JOINED, (event) => {
+        this.node.on('readyStatus', (event) => {
             const props = {
                 // 状态修改为准备
                 ready: true,
@@ -59,8 +59,7 @@ cc.Class({
             play.player.setCustomProperties(props);
         }, this);
 
-        this.node.on(Event.ROOM_JOIN_FAILED, () => {
-            // 创建一个房间等待其他人加入
+        this.node.on('createRoom', () => {
             const options = {
                 playerTtl: 30,
                 maxPlayerCount: this.maxPlayerCount,

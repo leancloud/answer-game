@@ -27,11 +27,11 @@ cc.Class({
         cc.game.addPersistRootNode(this.node);
 
         play.on(Event.ROOM_JOINED, () => {
-            cc.find('MatchmakingCanvas').emit(Event.ROOM_JOINED, {});
+            cc.find('MatchmakingCanvas').emit('readyStatus', {});
         });
 
         play.on(Event.ROOM_JOIN_FAILED, () => {
-            cc.find('MatchmakingCanvas').emit(Event.ROOM_JOIN_FAILED, {});
+            cc.find('MatchmakingCanvas').emit('createRoom', {});
         });
 
         // 玩家自定义属性变化事件
