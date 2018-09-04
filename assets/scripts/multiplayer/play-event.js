@@ -15,6 +15,9 @@ import {
     Event,
 } from '../play';
 
+var Constants = require('constants');
+
+
 cc.Class({
     extends: cc.Component,
 
@@ -25,33 +28,30 @@ cc.Class({
 
     onLoad () {
         cc.game.addPersistRootNode(this.node);
-
-        play.on(Event.ROOM_JOINED, () => {
-            cc.find('MatchmakingCanvas').emit('readyStatus', {});
-        });
-
+        
+        // Master Client 关心的事件
         play.on(Event.ROOM_JOIN_FAILED, () => {
             cc.find('MatchmakingCanvas').emit('createRoom', {});
         });
 
-        // 玩家自定义属性变化事件
-        play.on(Event.PLAYER_CUSTOM_PROPERTIES_CHANGED, (data) => {
+        play.on(Event.ROOM_JOINED, () => {
             if (play.player.isMaster()){
-                if (data.changedProps.ready) {
-                    // 玩家已设置准备
-                    cc.find('MatchmakingCanvas').emit('playerReady', data);
-                    return;
+                cc.find('MatchmakingCanvas').emit('setupPlayerData', {player: play.player});
+            }
+        });
+
+        play.on(Event.PLAYER_ROOM_JOINED, (data) => {
+            const { newPlayer } = data;
+            if (play.player.isMaster()){
+                cc.find('MatchmakingCanvas').emit('setupPlayerData', {player: newPlayer});
+                
+                if (play.room.playerList.length === Constants.MAX_PLAYER_COUNT) {
+                    cc.find('MatchmakingCanvas').emit('matched', {player: newPlayer});
                 }
 
-                if(data.changedProps.currentOption !== -1) {
-                    // 玩家已选择题目答案
-                    cc.find('MultiplayerGamePlayCanvas').emit('ifRoundOver', data);
-                    return;
-                }
-            };
+            }
         });
-        
-        // 房间属性变化事件
+
         play.on(Event.ROOM_CUSTOM_PROPERTIES_CHANGED, (data) => {
             // 题目已备好，开始游戏吧
             if ('questions' in data.changedProps) {
@@ -66,6 +66,15 @@ cc.Class({
             }
 
         });
+
+        play.on(Event.PLAYER_CUSTOM_PROPERTIES_CHANGED, (data) => {
+            if (play.player.isMaster() && data.changedProps.currentOption !== -1){
+                // 玩家已选择题目答案
+                cc.find('MultiplayerGamePlayCanvas').emit('ifRoundOver', data);
+                return;
+            };
+        });
+
 
         // 注册自定义事件
         play.on(Event.CUSTOM_EVENT, event => {
