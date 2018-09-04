@@ -118,9 +118,11 @@ cc.Class({
                 return total + 0;
             }, 0);
             if (answerPlayerCount === play.room.playerList.length) {
-                const roundOverData = {};
-                roundOverData.correctIndex = this.currentQuestion.answerIndex;
-                play.sendEvent('showRoundOverUI', roundOverData, {receiverGroup: ReceiverGroup.All});
+                const answers = {};
+                answers[this.selfPlayer.actorId] = this.selfPlayer.getCustomProperties().currentOption;
+                answers[this.rivalPlayer.actorId] = this.rivalPlayer.getCustomProperties().currentOption;
+                answers.correctIndex = this.currentQuestion.answerIndex;
+                play.sendEvent('showRoundOverUI', answers, {receiverGroup: ReceiverGroup.All});
             }
         });
 
@@ -140,8 +142,9 @@ cc.Class({
         });
 
         this.node.on('showRoundOverUI', event => {
-            const correctIndex = event.detail.eventData.correctIndex;
-            const rivalOption = this.rivalPlayer.getCustomProperties().currentOption;
+            const answers = event.detail.eventData;
+            const rivalOption = answers[this.rivalPlayer.actorId];
+            const correctIndex = answers.correctIndex;
             this.showButtonUI(rivalOption, correctIndex);
 
             if (play.player.isMaster()) {

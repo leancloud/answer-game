@@ -93,7 +93,7 @@ cc.Class({
     },
 
     getQuestions () {
-        AV.Cloud.rpc('getSingleGameData').then((questions) => {
+        AV.Cloud.rpc('getMultiplayerQuestions').then((questions) => {
             // 设置房间关闭
             play.setRoomOpened(false);
             // 设置房间不可见
