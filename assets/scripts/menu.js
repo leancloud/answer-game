@@ -22,14 +22,8 @@ cc.Class({
         },
     },
 
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {},
-
     start () {
     },
-
-    // update (dt) {},
 
     // Custom Methods
     onSingleButtonClicked () {
@@ -38,6 +32,10 @@ cc.Class({
 
     onChanllengeButtonClicked () {
         cc.director.loadScene('challenge-game-prepare');
+    },
+
+    onMultiplayerButtonClicked () {
+        cc.director.loadScene('multiplayer-matchmaking');
     },
 
     onLeaderboardButtonClicked () {
