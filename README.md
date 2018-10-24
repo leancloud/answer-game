@@ -1,4 +1,5 @@
 # answer-game
+这是一个类似于头脑王者，双人对战答题类的小游戏。
 
 ## 效果预览
 [点击此处在线感受游戏](http://answer-game.leanapp.cn/)
