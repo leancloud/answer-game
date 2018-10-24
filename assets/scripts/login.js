@@ -15,7 +15,7 @@ import {
     play,
     Region,
     Event,
-} from '../play';
+} from './play';
 
 cc.Class({
     extends: cc.Component,
@@ -31,11 +31,11 @@ cc.Class({
 
     onLoad () {
         // product
-        // var APP_ID = 'ta9jYFH8AbjSCRvgnObdu25B-gzGzoHsz';
-        // var APP_KEY = 'haPSS6eGp7iQXpgwLaTVKKBe';
+        var APP_ID = 'ta9jYFH8AbjSCRvgnObdu25B-gzGzoHsz';
+        var APP_KEY = 'haPSS6eGp7iQXpgwLaTVKKBe';
         // develop
-        var APP_ID = 'CjlBAcUnEv0uDvyAHaxLCcLq-gzGzoHsz';
-        var APP_KEY = 'OxUaOjxxncQFNbsuo1XU2Mp0';
+        // var APP_ID = 'CjlBAcUnEv0uDvyAHaxLCcLq-gzGzoHsz';
+        // var APP_KEY = 'OxUaOjxxncQFNbsuo1XU2Mp0';
 
         AV.init({
             appId: APP_ID,

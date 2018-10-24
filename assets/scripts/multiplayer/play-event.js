@@ -35,20 +35,16 @@ cc.Class({
         });
 
         play.on(Event.ROOM_JOINED, () => {
+            cc.find('MatchmakingCanvas').emit('setupSelfData');
             if (play.player.isMaster()){
-                cc.find('MatchmakingCanvas').emit('setupPlayerData', {player: play.player});
+                cc.find('MatchmakingCanvas').emit('initPlayerScore', {player: play.player});
             }
         });
 
         play.on(Event.PLAYER_ROOM_JOINED, (data) => {
             const { newPlayer } = data;
-            if (play.player.isMaster()){
-                cc.find('MatchmakingCanvas').emit('setupPlayerData', {player: newPlayer});
-                
-                if (play.room.playerList.length === Constants.MAX_PLAYER_COUNT) {
-                    cc.find('MatchmakingCanvas').emit('matched', {player: newPlayer});
-                }
-
+            if (play.player.isMaster() && play.room.playerList.length === Constants.MAX_PLAYER_COUNT){
+                cc.find('MatchmakingCanvas').emit('roomFull', {player: newPlayer});
             }
         });
 
@@ -64,15 +60,12 @@ cc.Class({
                 play.sendEvent('nextRound', {}, {receiverGroup: ReceiverGroup.All});
                 return;
             }
-
-        });
-
-        play.on(Event.PLAYER_CUSTOM_PROPERTIES_CHANGED, (data) => {
-            if (play.player.isMaster() && data.changedProps.currentOption !== -1){
-                // 玩家已选择题目答案
+            
+            if (play.player.isMaster() && 'playerData' in data.changedProps){
+                
                 cc.find('MultiplayerGamePlayCanvas').emit('ifRoundOver', data);
-                return;
             };
+
         });
 
 
@@ -95,8 +88,8 @@ cc.Class({
                 return;
             }
 
-            if (eventId === 'actorSelfOptionResult') {
-                cc.find('MultiplayerGamePlayCanvas').emit('actorSelfOptionResult', event);
+            if (eventId === 'actorOptionResult') {
+                cc.find('MultiplayerGamePlayCanvas').emit('actorOptionResult', event);
                 return;
             }
 

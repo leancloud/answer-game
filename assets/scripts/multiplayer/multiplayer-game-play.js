@@ -84,8 +84,8 @@ cc.Class({
                 
                 // 计算分数
                 const score = this.calculateScore(this.currentQuestion.answerIndex, optionIndex);
-                const actorPlayer = play.room.getPlayer(event.detail.senderId);
-                const newScore = actorPlayer.getCustomProperties().score + score;
+                const roomProps = play.room.getCustomProperties();
+                const newScore = roomProps.playerData[event.detail.senderId].score + score;
                 
                 const actorSelfOptionResult = {
                     score: newScore,
@@ -94,11 +94,14 @@ cc.Class({
                 }
                 
                 // 告诉事件发起者答案
-                play.sendEvent('actorSelfOptionResult', actorSelfOptionResult, {targetActorIds: [event.detail.senderId]});
+                play.sendEvent('actorOptionResult', actorSelfOptionResult, {targetActorIds: [event.detail.senderId]});
                 
                 // 存储事件发起者的答案
                 const currentOption = optionIndex;
-                actorPlayer.setCustomProperties({score: newScore, currentOption});
+                const playerData = roomProps.playerData;
+                playerData[event.detail.senderId] = {score: newScore, currentOption};
+                
+                play.room.setCustomProperties({playerData});
                 
                 // 告诉所有人事件发起者的分数
                 const optionResult = {
@@ -111,23 +114,24 @@ cc.Class({
         });
 
         this.node.on('ifRoundOver', event => {
+            const roomProps = play.room.getCustomProperties()
             const answerPlayerCount = play.room.playerList.reduce((total, player) => {
-                if (player.getCustomProperties().currentOption !== -1) {
+                if (roomProps.playerData[player.actorId].currentOption !== -1) {
                     return total + 1;
                 };
                 return total + 0;
             }, 0);
             if (answerPlayerCount === play.room.playerList.length) {
                 const answers = {};
-                answers[this.selfPlayer.actorId] = this.selfPlayer.getCustomProperties().currentOption;
-                answers[this.rivalPlayer.actorId] = this.rivalPlayer.getCustomProperties().currentOption;
+                answers[this.selfPlayer.actorId] = roomProps.playerData[this.selfPlayer.actorId].currentOption;
+                answers[this.rivalPlayer.actorId] = roomProps.playerData[this.rivalPlayer.actorId].currentOption;
                 answers.correctIndex = this.currentQuestion.answerIndex;
                 play.sendEvent('showRoundOverUI', answers, {receiverGroup: ReceiverGroup.All});
             }
         });
 
         // 普通玩家事件触发
-        this.node.on('actorSelfOptionResult', event => {
+        this.node.on('actorOptionResult', event => {
             const data = event.detail.eventData;
             this.myScoreLabel.string = data.score;
             this.showButtonUI(data.currentOption, data.correctIndex);
@@ -171,8 +175,12 @@ cc.Class({
         setTimeout(() => {
             // 重置选项
             const currentOption = -1;
-            this.selfPlayer.setCustomProperties({currentOption});
-            this.rivalPlayer.setCustomProperties({currentOption});
+            const playerData = play.room.getCustomProperties().playerData;
+            playerData[this.selfPlayer.actorId].currentOption = currentOption;
+            playerData[this.rivalPlayer.actorId].currentOption = currentOption;
+            // this.selfPlayer.setCustomProperties({currentOption});
+            // this.rivalPlayer.setCustomProperties({currentOption});
+            play.room.setCustomProperties({playerData});
             // 进入下一局
             if (play.room.getCustomProperties().currentQuestionIndex + 1 < this.questions.length) {
                 let currentQuestionIndex = play.room.getCustomProperties().currentQuestionIndex;
@@ -229,8 +237,6 @@ cc.Class({
     },
 
     nextQuestion() {
-        let currentQuestionIndex = play.room.getCustomProperties().currentQuestionIndex;
-        currentQuestionIndex ++;
         this.newQuestion();
     },
 
@@ -251,8 +257,8 @@ cc.Class({
     },
 
     gameOver () {
-        const selfScore = this.selfPlayer.getCustomProperties().score;
-        const rivalScore = this.rivalPlayer.getCustomProperties().score;
+        const selfScore = play.room.getCustomProperties().playerData[this.selfPlayer.actorId].score;
+        const rivalScore = play.room.getCustomProperties().playerData[this.rivalPlayer.actorId].score;
 
         if (selfScore > rivalScore) {
             var result = '你赢啦，今晚加个鸡腿';

@@ -66,7 +66,14 @@ cc.Class({
             player.setCustomProperties(props);
         });
 
-        this.node.on('matched', (event) => {
+        this.node.on('setupSelfData', (event) => {
+            const props = {
+                nickname: AV.User.current().getUsername(),
+            };
+            play.player.setCustomProperties(props);
+        });
+
+        this.node.on('roomFull', (event) => {
             this.getQuestions();
         });
         
@@ -105,6 +112,16 @@ cc.Class({
                 roundTime: Constants.QUESTION_TIMER,
                 currentQuestionIndex: 0,
             };
+            // 设置玩家初始分数
+            roomProps.playerData = {};
+            for (let i = 0; i < play.room.playerList.length; i++) {
+                const player = play.room.playerList[i];
+                const playerId = player.actorId;
+                roomProps.playerData[playerId] = {
+                  score: 0,
+                  currentOption: -1,
+                };
+            }
             play.room.setCustomProperties(roomProps);
         }).catch((error) => console.error(error));
     },
